@@ -45,10 +45,6 @@ export abstract class DescargadorBase implements IDescargable {
         if (timeoutId) clearTimeout(timeoutId);
         ultimoError = error;
 
-        if (error instanceof ErrorNotFound) {
-          throw error;
-        }
-
         if (intento < maxIntentos) {
           const delay = this.backoffBaseMs * Math.pow(2, intento - 1);
           await new Promise(resolve => setTimeout(resolve, delay));

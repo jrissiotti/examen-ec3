@@ -2,7 +2,6 @@ import axios from 'axios';
 import { DescargadorBase } from '../../domain/abstract/descargadorBase';
 import { ErrorTimeout, ErrorNotFound, ErrorServidor } from '../../domain/errors/index';
 
-// REPARADO: Se agregó la 'r' que faltaba en DescargadorHttp
 export class DescargadorHttp extends DescargadorBase {
 
   async descargar(url: string): Promise<Buffer> {
