@@ -51,13 +51,13 @@
         </template>
       </Column>
 
-      <Column field="progreso" header="Progreso">
+      <Column field="progreso" header="Progreso" style="min-width: 140px">
         <template #body="{ data }">
           <ProgressBar :progress="data.progreso" />
         </template>
       </Column>
 
-      <Column field="intentos" header="Intentos" sortable>
+      <Column field="intentos" header="Intentos" sortable style="min-width: 80px; text-align: center">
         <template #body="{ data }">
           <span :class="{ 'max-retries': data.intentos >= 5 }">
             {{ data.intentos }}
@@ -98,7 +98,7 @@
               icon="pi pi-times"
               class="p-button-danger p-button-sm"
               aria-label="Cancelar"
-              @click="$emit('cancel', data.id)"
+              @click="handleCancel(data.id)"
               v-tooltip.top="'Cancelar descarga'"
             />
           </div>
@@ -123,22 +123,45 @@ import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import ProgressBar from './ProgressBar.vue';
 import DownloadStatus from './DownloadStatus.vue';
+import { useToast } from 'primevue/usetoast';
 import type { Download } from '../types';
 import { formatFecha } from '../utils/formatters';
+import { cancelDownload } from '../services/downloadService';
 
 interface Props {
   downloads: Download[];
   loading?: boolean;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+const toast = useToast();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'retry', id: string): void;
   (e: 'viewDetails', id: string): void;
   (e: 'cancel', id: string): void;
   (e: 'refresh'): void;
 }>();
+
+async function handleCancel(id: string): Promise<void> {
+  try {
+    await cancelDownload(id);
+    toast.add({
+      severity: 'success',
+      summary: 'Descarga cancelada',
+      detail: 'La descarga ha sido cancelada exitosamente',
+      life: 3000,
+    });
+    emit('cancel', id);
+  } catch (err: any) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: err.error || 'No se pudo cancelar la descarga',
+      life: 5000,
+    });
+  }
+}
 
 function truncateId(id: string): string {
   return id.length > 8 ? `${id.slice(0, 8)}...` : id;
@@ -233,6 +256,14 @@ function truncateUrl(url: string): string {
 
 .empty-state span {
   font-size: 0.875rem;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+  padding: 0.75rem 1rem;
+}
+
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+  padding: 0.75rem 1rem;
 }
 
 @media (max-width: 768px) {

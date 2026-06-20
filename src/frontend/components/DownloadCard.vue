@@ -4,8 +4,9 @@
     @update:visible="$emit('update:visible', $event)"
     :header="`Detalle de Descarga`"
     modal
-    :style="{ width: '500px' }"
+    :style="{ width: '650px', maxWidth: '90vw' }"
     class="download-dialog"
+    :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
   >
     <div v-if="download" class="detail-content">
       <div class="detail-row">
@@ -50,19 +51,21 @@
     </div>
 
     <template #footer>
-      <Button
-        v-if="download?.estado === 'FALLIDA'"
-        label="Reintentar"
-        icon="pi pi-refresh"
-        @click="$emit('retry')"
-        severity="warning"
-      />
-      <Button
-        label="Cerrar"
-        icon="pi pi-times"
-        @click="$emit('update:visible', false)"
-        text
-      />
+      <div class="dialog-footer">
+        <Button
+          v-if="download?.estado === 'FALLIDA'"
+          label="Reintentar"
+          icon="pi pi-refresh"
+          @click="$emit('retry')"
+          severity="warning"
+        />
+        <Button
+          label="Cerrar"
+          icon="pi pi-times"
+          @click="$emit('update:visible', false)"
+          text
+        />
+      </div>
     </template>
   </Dialog>
 </template>
@@ -89,18 +92,34 @@ defineEmits<{
 }>();
 </script>
 
+<style>
+/* Estilos globales - sin scoped para forzar la aplicacion */
+.download-dialog .p-dialog-header {
+  padding: 2rem 2.5rem 1.5rem 2.5rem !important;
+}
+
+.download-dialog .p-dialog-content {
+  padding: 0 2.5rem 2rem 2.5rem !important;
+}
+
+.download-dialog .p-dialog-footer {
+  padding: 1.5rem 2.5rem 2rem 2.5rem !important;
+}
+</style>
+
 <style scoped>
 .detail-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
+  padding: 1rem 0;
 }
 
 .detail-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
+  gap: 1.5rem;
+  padding: 1rem 0;
   border-bottom: 1px solid var(--surface-200);
 }
 
@@ -109,21 +128,25 @@ defineEmits<{
 }
 
 .label {
-  min-width: 100px;
+  min-width: 120px;
   font-weight: 600;
   color: var(--text-color-secondary);
-  font-size: 0.875rem;
+  font-size: 0.95rem;
 }
 
 .value {
   flex: 1;
   color: var(--text-color);
   word-break: break-all;
+  font-size: 0.95rem;
 }
 
 .value.mono {
   font-family: monospace;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  background: var(--surface-100);
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.3rem;
 }
 
 .value.link {
@@ -137,10 +160,17 @@ defineEmits<{
 
 .error-text {
   color: var(--red-500);
+  font-weight: 500;
 }
 
 .detail-progress {
   flex: 1;
-  max-width: 200px;
+  max-width: 300px;
+}
+
+.dialog-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
 }
 </style>
