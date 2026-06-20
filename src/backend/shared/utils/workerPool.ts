@@ -32,7 +32,10 @@ export class WorkerPool {
 
       worker.on('message', (respuesta: RespuestaWorker) => {
         const descarga = descargasRepository.get(respuesta.id);
-        
+        if (descarga && descarga.estado === EstadoDescarga.REINTENTANDO) {
+          descarga.iniciar();  // Pone EN_PROGRESO
+          logger.info(`[REINTENTO] Descarga ${respuesta.id} pasó de REINTENTANDO a EN_PROGRESO`);
+        }
         // Si es una notificación intermedia de progreso
         if ((respuesta as any).enProgreso) {
           if (descarga) {
@@ -104,11 +107,11 @@ export class WorkerPool {
 
           const descarga = descargasRepository.get(tarea.mensaje.id);
           if (descarga) {
-            descarga.iniciar();
+            // Si está REINTENTANDO, mantener ese estado un momento antes de EN_PROGRESO
+            if (descarga.estado !== EstadoDescarga.REINTENTANDO) {
+              descarga.iniciar();  // Solo poner EN_PROGRESO si no es reintento
+            }
             descarga.intentos = (descarga.intentos ?? 0) + 1;
-            
-            // LOG EN TERMINAL: Muestra cuando el hilo principal saca la tarea de la cola FIFO y la procesa
-            logger.info(`[PROCESO] Asignando Descarga ID: ${descarga.id} al Worker ${i} (Intento: ${descarga.intentos})`);
           }
 
           this.workers[i].postMessage(tarea.mensaje);

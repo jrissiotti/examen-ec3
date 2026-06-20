@@ -17,7 +17,8 @@ export class ReintentarDescargaUseCase {
       throw new InvalidStateException('Solo se pueden reintentar descargas en estado FALLIDA');
     }
 
-    descarga.estado = EstadoDescarga.PENDIENTE;
+    // FIX: Poner REINTENTANDO en vez de PENDIENTE
+    descarga.estado = EstadoDescarga.REINTENTANDO;
     descarga.actualizarProgreso(0);
 
     workerPool.enqueue({

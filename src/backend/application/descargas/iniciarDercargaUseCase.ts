@@ -21,7 +21,11 @@ export class IniciarDescargaUseCase {
     const nuevaDescarga = new Descarga(id, input.url, input.tipo);
     
     descargasRepository.save(nuevaDescarga);
-    (workerPool as any).enqueue ? (workerPool as any).enqueue(nuevaDescarga) : (workerPool as any).encolarTarea(nuevaDescarga);
+    
+    // FIX: Dejar que PENDIENTE se vea un momento antes de encolar
+    setTimeout(() => {
+      (workerPool as any).enqueue ? (workerPool as any).enqueue(nuevaDescarga) : (workerPool as any).encolarTarea(nuevaDescarga);
+    }, 2000);  // ← Espera 2 segundos antes de encolar
 
     return nuevaDescarga;
   }
