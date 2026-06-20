@@ -6,6 +6,7 @@ import {
   reintentarDescarga
 } from '../controllers/descargas.controller';
 import { validarCreacionDescarga } from '../middleware/validationMiddleware';
+import { cancelarDescarga } from '../controllers/descargas.controller';
 
 const router = Router();
 
@@ -72,5 +73,6 @@ router.get('/:id/estado', obtenerEstadoDescarga);
  *           type: string
  */
 router.post('/:id/reintentar', reintentarDescarga);
+router.post('/:id/cancelar', cancelarDescarga);
 
 export default router;

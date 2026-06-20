@@ -5,10 +5,10 @@ export class DescargadorMock extends DescargadorBase {
   async descargar(url: string): Promise<Buffer> {
     return this.ejecutarConReintento(async () => {
       this.progreso = 30;
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       this.progreso = 70;
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       this.progreso = 100;
       return Buffer.from(`¡Mock exitoso! ${url} - ${new Date().toISOString()}`);

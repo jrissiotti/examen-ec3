@@ -1,82 +1,98 @@
-# Concurrent Download Simulator
+# EC3: Frontend UI y Testing - Simulador de Descargas Concurrentes
 
-Simulator for concurrent downloads implemented with Node.js, TypeScript, and Worker Threads.
+## 📋 Descripción
 
-## Quick Start
+Implementación de interfaz de usuario (Vue 3 + TypeScript) y suite de tests (integración + E2E) para el sistema de simulador de descargas concurrentes.
 
-### Install
+## 🛠 Stack Técnico
 
+| Capa | Tecnología |
+|------|-----------|
+| Framework | Vue 3 (Composition API) |
+| Lenguaje | TypeScript (strict) |
+| Build Tool | Vite |
+| UI Framework | PrimeVue + PrimeFlex |
+| Estado | Pinia + Composables |
+| HTTP Client | Axios |
+| Charts | Chart.js + vue-chartjs |
+| Tests Integración | Vitest + jsdom |
+| Tests E2E | Playwright |
+| Mocking | MSW (Mock Service Worker) |
+
+## 🚀 Instalación y Ejecución
+
+### Prerrequisitos
+- Node.js 18+
+- Backend corriendo en `http://localhost:3000`
+
+### 1. Instalar dependencias
 ```bash
 npm install
 ```
 
-### Development
-
+### 2. Ejecutar frontend en desarrollo
 ```bash
 npm run dev
+# Abre http://localhost:5173
 ```
 
-Open http://localhost:3000/api-docs for Swagger documentation.
-
-### Build
-
+### 3. Ejecutar tests de integración (backend)
 ```bash
-npm run build
-npm start
+npm run test:integration
 ```
 
-## API Endpoints
-
-### Create Download
-
+### 4. Ejecutar tests E2E
 ```bash
-POST /api/descargas
-Content-Type: application/json
-
-{
-  "url": "https://example.com/file.pdf",
-  "tipo": "http",
-  "maxReintentos": 3
-}
+npm run test:e2e
+# Modo UI interactivo
+npm run test:e2e:ui
 ```
 
-### Get Status
+## 📁 Estructura del Proyecto
 
-```bash
-GET /api/descargas/{id}/estado
+```
+src/
+├── frontend/           # Aplicación Vue 3
+│   ├── components/     # Componentes reutilizables
+│   ├── pages/          # Páginas principales
+│   ├── services/       # Cliente HTTP y servicios API
+│   ├── composables/    # Lógica reutilizable (hooks)
+│   ├── types/          # Tipos TypeScript
+│   ├── utils/          # Validadores y formateadores
+│   ├── stores/         # Pinia stores
+│   ├── __tests__/      # Tests
+│   │   ├── integration/# Tests de integración backend
+│   │   ├── e2e/       # Tests E2E Playwright
+│   │   └── mocks/     # MSW handlers
+│   ├── router/         # Vue Router
+│   ├── App.vue         # Componente raíz
+│   └── main.ts         # Punto de entrada
+└── backend/            # Backend existente (EC2)
 ```
 
-### List Downloads
+## 🧪 Estrategia de Testing
 
-```bash
-GET /api/descargas
-```
+### Tests de Integración
+- Validan que la API REST responde correctamente
+- Cubren: creación, listado, estado, reintento, errores 4xx
+- Se ejecutan contra el backend real
 
-### Retry Download
+### Tests E2E (Playwright)
+- Automatizan flujos completos del usuario
+- Multi-navegador (Chromium, Firefox)
+- Validaciones visuales y funcionales
+- Manejo de async/polling
 
-```bash
-POST /api/descargas/{id}/reintentar
-```
+## 🔗 API Endpoints Consumidos
 
-## Architecture
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/descargas` | Crear descarga |
+| GET | `/api/descargas` | Listar descargas |
+| GET | `/api/descargas/:id/estado` | Estado individual |
+| POST | `/api/descargas/:id/reintentar` | Reintentar |
 
-- domain/: entities, value objects, interfaces, errors
-- application/: use cases and handlers
-- infrastructure/: concrete implementations, workers, repositories
-- interfaces/: controllers, routes, middleware
+## 👥 Autores
 
-## Provided Scaffolding
-
-- Express routes with Swagger
-- Input validation middleware
-- Global error handling middleware
-- DDD-ready folder structure
-
-### To be implemented by student
-
-- Entities and value objects
-- Abstract class DescargadorBase
-- Concrete downloaders (HTTP, FTP, Mock)
-- Downloader factory
-- Error hierarchy
-- Worker pool and concurrency
+- SIS-113 | Programación Orientada a Objetos
+- Universidad Católica Boliviana

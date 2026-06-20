@@ -17,7 +17,7 @@ export const config = {
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
 
   // Paths
-  WORKERS_PATH: path.join(__dirname, '../infrastructure/workers')
+  WORKERS_PATH: path.join(new URL('.', import.meta.url).pathname, '../infrastructure/workers')
 } as const;
 
 if (config.PORT < 1 || config.PORT > 65535) {

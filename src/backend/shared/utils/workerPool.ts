@@ -1,10 +1,10 @@
-import path from 'path';
 import { Worker } from 'worker_threads';
 import { MensajeWorker, RespuestaWorker } from '../types';
 import { config } from '../config';
 import { logger } from './logger';
 import { descargasRepository } from '../../interfaces/controllers/descargas.controller';
 import { EstadoDescarga } from '../enums';
+import { fileURLToPath } from 'url';
 
 interface Tarea {
   mensaje: MensajeWorker;
@@ -23,11 +23,11 @@ export class WorkerPool {
   }
 
   private inicializarWorkers(): void {
-    const workerPath = path.join(config.WORKERS_PATH, 'descargaWorker.ts');
+    const workerPath = fileURLToPath(new URL('../../infrastructure/workers/descargaWorker.ts', import.meta.url));
 
     for (let i = 0; i < config.MAX_CONCURRENT_WORKERS; i++) {
       const worker = new Worker(workerPath, {
-        execArgv: ['-r', 'ts-node/register']
+        execArgv: ['--import', 'tsx']
       });
 
       worker.on('message', (respuesta: RespuestaWorker) => {

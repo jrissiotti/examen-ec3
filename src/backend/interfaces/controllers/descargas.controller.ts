@@ -7,6 +7,7 @@ import { EstadoDescarga } from '../../shared/enums/index';
 import { NotFoundException } from '../../application/exceptions/notFoundException';
 import { InvalidStateException } from '../../application/exceptions/invalidStateException';
 import { SystemSaturatedException } from '../../application/exceptions/systemSaturatedException';
+import { CancelarDescargaUseCase } from '../../application/descargas/cancelarDescargaUseCase';
 
 class MemoryRepository {
   private items = new Map<string, any>();
@@ -21,6 +22,7 @@ const iniciarDescargaUC = new IniciarDescargaUseCase();
 const obtenerEstadoUC = new ObtenerEstadoUseCase();
 const reintentarDescargaUC = new ReintentarDescargaUseCase();
 const listarDescargasUC = new ListarDescargasUseCase();
+const cancelarDescargaUC = new CancelarDescargaUseCase();
 
 /**
  * POST /api/descargas
@@ -63,7 +65,7 @@ export const obtenerEstadoDescarga = async (
   try {
     const { id } = req.params;
 
-    const descarga = obtenerEstadoUC.ejecutar(id);
+    const descarga = obtenerEstadoUC.ejecutar(id as string);
 
     res.json({
       id: descarga.id,
@@ -123,7 +125,7 @@ export const reintentarDescarga = async (
   try {
     const { id } = req.params;
 
-    const descarga = await reintentarDescargaUC.ejecutar(id);
+    const descarga = await reintentarDescargaUC.ejecutar(id as string);
 
     res.json({
       id: descarga.id,
@@ -137,6 +139,34 @@ export const reintentarDescarga = async (
       return;
     }
     // Si la descarga no está fallida, devolvemos 400 Bad Request
+    if (error instanceof InvalidStateException) {
+      res.status(400).json({ message: error.message });
+      return;
+    }
+    next(error);
+  }
+};
+/**
+ * POST /api/descargas/:id/cancelar
+ */
+export const cancelarDescarga = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const descarga = await cancelarDescargaUC.ejecutar(id as string);
+    res.json({
+      id: descarga.id,
+      estado: descarga.estado,
+      mensaje: 'Descarga cancelada exitosamente'
+    });
+  } catch (error) {
+    if (error instanceof NotFoundException) {
+      res.status(404).json({ message: error.message });
+      return;
+    }
     if (error instanceof InvalidStateException) {
       res.status(400).json({ message: error.message });
       return;
